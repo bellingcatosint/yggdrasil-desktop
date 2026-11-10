@@ -36,6 +36,7 @@ Local verification performed against the committed source:
 
 - `go test -race ./...` — passed.
 - `go vet ./...` — passed.
+- `GOOS=windows GOARCH=amd64 go test -c ./internal/adminapi` — Windows/amd64 test binary cross-compilation passed; this is not a Windows runtime test.
 - Environment: Linux, Go 1.23.2.
 
 These are local mock-server tests. They do not establish compatibility with an installed Yggdrasil daemon or Windows service.
