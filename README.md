@@ -4,11 +4,13 @@ A desktop control center designed to make the Yggdrasil network easier to instal
 
 ## Project status
 
-**Initiated — discovery and technical audit.**
+**Early implementation — read-only Admin API client.**
 
-This repository is the project’s working home. No application code or platform integration is claimed to exist yet.
+The repository now contains the first Go component at `internal/adminapi`. It implements the read-only `list`, `getSelf`, `getPeers`, and `getSessions` calls, with loopback-only endpoint validation, bounded exchanges, deadlines, typed payloads, and error handling. Unit tests pass locally with Go 1.23 on Linux, including the race detector and `go vet`.
 
-The first static technical audit is available in [docs/technical-audit.md](docs/technical-audit.md). The source-pinned read-only Admin API contract is documented in [docs/admin-api-contract.md](docs/admin-api-contract.md). It confirms the initial Admin API integration path, identifies the Windows service and privilege constraints, and records existing GUI projects. Runtime verification and the first prototype remain outstanding.
+This is a library component, not a desktop application or a tested Windows integration. No live Yggdrasil daemon, Windows service, GUI, installer, or packaging workflow has been verified yet.
+
+The static technical audit is available in [docs/technical-audit.md](docs/technical-audit.md), and the source-pinned protocol contract in [docs/admin-api-contract.md](docs/admin-api-contract.md).
 
 ## Vision
 
