@@ -8,7 +8,7 @@ A desktop control center designed to make the Yggdrasil network easier to instal
 
 This repository is the project’s working home. No application code or platform integration is claimed to exist yet.
 
-The first static technical audit is available in [docs/technical-audit.md](docs/technical-audit.md). It confirms the initial Admin API integration path, identifies the Windows service and privilege constraints, and records existing GUI projects. Runtime verification and the first prototype remain outstanding.
+The first static technical audit is available in [docs/technical-audit.md](docs/technical-audit.md). The source-pinned read-only Admin API contract is documented in [docs/admin-api-contract.md](docs/admin-api-contract.md). It confirms the initial Admin API integration path, identifies the Windows service and privilege constraints, and records existing GUI projects. Runtime verification and the first prototype remain outstanding.
 
 ## Vision
 
