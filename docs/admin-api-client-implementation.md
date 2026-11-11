@@ -53,3 +53,20 @@ These are local mock-server tests. They do not establish compatibility with an i
 ## Security note
 
 Loopback-only validation is defense in depth, not authentication. Any local process able to reach the daemon's unauthenticated Admin API may still be able to invoke commands outside this client's read-only surface. Expanse's client does not change that upstream trust boundary.
+
+
+## Windows service discovery — implementation added
+
+The new internal/windowsservice package adds a read-only discovery path:
+
+- Enumerates service names through the Windows Service Control Manager.
+- Opens SCM with SC_MANAGER_CONNECT + SC_MANAGER_ENUMERATE_SERVICE, not all-access.
+- Opens the Yggdrasil service with SERVICE_QUERY_CONFIG + SERVICE_QUERY_STATUS, not all-access.
+- Reads the service state and ImagePath; parses quoted executable and argument paths using Windows backslash/quote rules.
+- Resolves the upstream -useconffile argument. -autoconf and stdin configuration are reported as having no static config path rather than guessed.
+- Parses the actual HJSON config's root AdminListen value and validates it with the existing loopback-only Admin API endpoint validator.
+- Does not start, stop, reconfigure, or change permissions on the service.
+
+Portable unit tests cover command-line parsing, config-path extraction, HJSON endpoint parsing, disabled/missing settings, and rejection of non-loopback endpoints.
+
+**Not yet verified:** Windows runtime behavior, access under a standard (non-elevated) user, actual installed MSI service metadata, and live daemon connectivity. The implementation deliberately requests query-only access, but the Windows runtime check is still required before treating discovery as production-ready.
