@@ -57,3 +57,14 @@ func TestParseAdminListenRejectsRemoteAndDisabled(t *testing.T) {
 func TestParseAdminListenMalformed(t *testing.T) {
 	if _, err := ParseAdminListen([]byte(strings.Repeat("{", 10))); err == nil { t.Fatal("expected parse error") }
 }
+
+
+func TestExpandWindowsEnvironment(t *testing.T) {
+	env := map[string]string{"ALLUSERSPROFILE": `C:\ProgramData`, "SystemRoot": `C:\Windows`}
+	lookup := func(name string) (string, bool) { value, ok := env[name]; return value, ok }
+	got, err := expandWindowsEnvironment(`%ALLUSERSPROFILE%\Yggdrasil\yggdrasil.conf`, lookup)
+	if err != nil { t.Fatal(err) }
+	want := `C:\ProgramData\Yggdrasil\yggdrasil.conf`
+	if got != want { t.Fatalf("got %q, want %q", got, want) }
+	if _, err := expandWindowsEnvironment(`%MISSING%\file.conf`, lookup); err == nil { t.Fatal("expected undefined variable error") }
+}
