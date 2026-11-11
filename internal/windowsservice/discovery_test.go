@@ -12,7 +12,13 @@ func TestParseServiceCommandLine(t *testing.T) {
 		{"escaped quote", `app.exe -label "a\\\"b"`, []string{"app.exe", "-label", `a\"b`}},
 		{"unquoted", `C:\Yggdrasil\yggdrasil.exe -autoconf`, []string{`C:\Yggdrasil\yggdrasil.exe`, "-autoconf"}},
 	}
-	for _, tc := range cases { t.Run(tc.name, func(t *testing.T) { got, err := ParseServiceCommandLine(tc.input); if err != nil { t.Fatal(err) }; if !reflect.DeepEqual(got, tc.want) { t.Fatalf("got %#v, want %#v", got, tc.want) } }) }
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got, err := ParseServiceCommandLine(tc.input)
+			if err != nil { t.Fatal(err) }
+			if !reflect.DeepEqual(got, tc.want) { t.Fatalf("got %#v, want %#v", got, tc.want) }
+		})
+	}
 }
 
 func TestParseServiceCommandLineRejectsUnterminatedQuote(t *testing.T) {
@@ -26,7 +32,11 @@ func TestResolveConfigPath(t *testing.T) {
 		{[]string{"yggdrasil.exe", "-autoconf"}, ""},
 		{[]string{"yggdrasil.exe", "-useconf"}, ""},
 	}
-	for _, tc := range cases { got, err := ResolveConfigPath(tc.args); if err != nil { t.Fatal(err) }; if got != tc.want { t.Fatalf("got %q, want %q", got, tc.want) } }
+	for _, tc := range cases {
+		got, err := ResolveConfigPath(tc.args)
+		if err != nil { t.Fatal(err) }
+		if got != tc.want { t.Fatalf("got %q, want %q", got, tc.want) }
+	}
 	for _, args := range [][]string{{"yggdrasil.exe", "-useconffile"}, {"yggdrasil.exe", "-useconffile="}} {
 		if _, err := ResolveConfigPath(args); err == nil { t.Fatalf("expected missing-path error for %#v", args) }
 	}
