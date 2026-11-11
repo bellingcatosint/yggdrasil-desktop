@@ -17,7 +17,7 @@ The service is located by its service name (Yggdrasil, case-insensitive). If it 
 
 ## Configuration resolution
 
-The service's ImagePath is parsed as a Windows command line. The parser handles quoted paths and backslash/quote escaping. The executable and arguments are retained in the result.
+The service's ImagePath is parsed as a Windows command line. The parser handles quoted paths and backslash/quote escaping. The executable and arguments are retained in the result. The upstream v0.5.15 MSI uses the %ALLUSERSPROFILE% environment variable in its -useconffile argument, so discovery expands Windows %NAME% variables before reading the config and reports an error if a required variable is undefined.
 
 Supported configuration modes:
 
