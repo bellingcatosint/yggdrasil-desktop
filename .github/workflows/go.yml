@@ -30,6 +30,9 @@ jobs:
       - name: Resolve Go module checksums
         run: go mod tidy
 
+      - name: Show resolved module checksums
+        run: cat go.sum
+
       - name: Run unit tests
         run: go test ./...
 
