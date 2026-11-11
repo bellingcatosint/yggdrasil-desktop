@@ -51,6 +51,10 @@ func Discover(ctx context.Context) (ServiceInfo, error) {
 	if err != nil { return ServiceInfo{}, fmt.Errorf("parse Yggdrasil service ImagePath: %w", err) }
 	configPath, err := ResolveConfigPath(args)
 	if err != nil { return ServiceInfo{}, err }
+	if configPath != "" {
+		configPath, err = expandWindowsEnvironment(configPath, os.LookupEnv)
+		if err != nil { return ServiceInfo{}, err }
+	}
 
 	info := ServiceInfo{Name: serviceName, State: mapServiceState(status.State), BinaryPath: args[0], Arguments: append([]string(nil), args[1:]...), ConfigPath: configPath}
 	if configPath == "" { return info, ErrNoStaticConfig }
