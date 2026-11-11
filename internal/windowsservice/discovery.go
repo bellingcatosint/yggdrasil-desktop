@@ -5,6 +5,7 @@ package windowsservice
 import (
 	"errors"
 	"fmt"
+	"regexp"
 	"strings"
 
 	"github.com/bellingcatosint/yggdrasil-desktop/internal/adminapi"
@@ -115,4 +116,26 @@ func ParseAdminListen(data []byte) (string, error) {
 	if endpoint == "" { return "", errors.New("AdminListen is disabled") }
 	if _, err := adminapi.New(endpoint); err != nil { return "", fmt.Errorf("unsafe or unsupported AdminListen endpoint: %w", err) }
 	return endpoint, nil
+}
+
+
+// windowsEnvironmentVariable matches the %NAME% syntax used in Windows service
+// ImagePath arguments and the upstream MSI's ALLUSERSPROFILE config path.
+var windowsEnvironmentVariable = regexp.MustCompile(`%([^%]+)%`)
+
+func expandWindowsEnvironment(path string, lookup func(string) (string, bool)) (string, error) {
+	var missing string
+	expanded := windowsEnvironmentVariable.ReplaceAllStringFunc(path, func(token string) string {
+		name := token[1 : len(token)-1]
+		value, ok := lookup(name)
+		if !ok {
+			missing = name
+			return token
+		}
+		return value
+	})
+	if missing != "" {
+		return "", fmt.Errorf("Windows environment variable %%%s%% is not defined", missing)
+	}
+	return expanded, nil
 }
