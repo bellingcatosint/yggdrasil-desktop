@@ -43,7 +43,7 @@ func TestResolveConfigPath(t *testing.T) {
 }
 
 func TestParseAdminListen(t *testing.T) {
-	got, err := ParseAdminListen([]byte(`{ AdminListen: "tcp://127.0.0.1:9001", }`))
+	got, err := ParseAdminListen([]byte(`{ AdminListen: "tcp://127.0.0.1:9001" }`))
 	if err != nil { t.Fatal(err) }
 	if got != "tcp://127.0.0.1:9001" { t.Fatalf("unexpected endpoint %q", got) }
 }
