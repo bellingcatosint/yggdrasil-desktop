@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"os"
 
 	"github.com/bellingcatosint/yggdrasil-desktop/internal/adminapi"
@@ -17,7 +18,7 @@ func main() {
 	}
 }
 
-func run(ctx context.Context, out *os.File) error {
+func run(ctx context.Context, out io.Writer) error {
 	service, err := windowsservice.Discover(ctx)
 	if err != nil {
 		if errors.Is(err, windowsservice.ErrNoStaticConfig) {
