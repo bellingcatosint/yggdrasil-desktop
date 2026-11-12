@@ -18,6 +18,11 @@ var (
 	ErrNoStaticConfig = errors.New("Yggdrasil service does not reference a static configuration file")
 )
 
+// defaultWindowsAdminListen matches yggdrasil-go v0.5.15's Windows platform
+// default. It is used only when the config omits AdminListen; the diagnostic
+// command must still verify the endpoint by issuing the read-only "list" call.
+const defaultWindowsAdminListen = "tcp://localhost:9001"
+
 // State is a platform-neutral service state label.
 type State string
 
@@ -104,20 +109,23 @@ func ResolveConfigPath(args []string) (string, error) {
 }
 
 // ParseAdminListen reads the root AdminListen setting from Yggdrasil's HJSON
-// configuration and rejects non-loopback TCP endpoints before returning it.
+// configuration and rejects non-loopback TCP endpoints. When the key is absent,
+// it returns the upstream v0.5.15 Windows platform default; callers must verify
+// that endpoint against the running daemon before treating it as available.
 func ParseAdminListen(data []byte) (string, error) {
 	var config map[string]any
 	if err := hjson.Unmarshal(data, &config); err != nil { return "", fmt.Errorf("parse Yggdrasil HJSON configuration: %w", err) }
 	value, ok := config["AdminListen"]
-	if !ok { return "", errors.New("configuration does not contain AdminListen") }
+	if !ok {
+		return defaultWindowsAdminListen, nil
+	}
 	endpoint, ok := value.(string)
 	if !ok { return "", errors.New("AdminListen must be a string") }
 	endpoint = strings.TrimSpace(endpoint)
-	if endpoint == "" { return "", errors.New("AdminListen is disabled") }
+	if endpoint == "" || strings.EqualFold(endpoint, "none") { return "", errors.New("AdminListen is disabled") }
 	if _, err := adminapi.New(endpoint); err != nil { return "", fmt.Errorf("unsafe or unsupported AdminListen endpoint: %w", err) }
 	return endpoint, nil
 }
-
 
 // windowsEnvironmentVariable matches the %NAME% syntax used in Windows service
 // ImagePath arguments and the upstream MSI's ALLUSERSPROFILE config path.

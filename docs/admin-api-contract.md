@@ -33,7 +33,7 @@ The upstream handler uses a JSON decoder over a TCP connection and an encoder fo
 - The server rejects unknown top-level request fields.
 - The response encoder emits indented JSON followed by a newline. **Do not assume the response is a single physical line.** Decode one complete JSON value from the stream.
 
-Default Windows endpoint documented by the project audit: `tcp://localhost:9001`. The actual listener must be discovered from the installed service configuration; do not assume this default if a custom service is present.
+For upstream Yggdrasil v0.5.15 on Windows, the platform default is `tcp://localhost:9001`. A missing `AdminListen` key in a config file does not mean the API is disabled: Yggdrasil initializes the configuration with platform defaults before applying the file. The desktop diagnostic may use this documented Windows default only when the key is absent, and must verify it with a successful read-only `list` request. An explicit empty value or `AdminListen: "none"` disables the Admin API and must not fall back. Custom builds may override the compiled platform default.
 
 ## 3. Request and response envelope
 
@@ -226,7 +226,3 @@ Pinned source URLs:
 - https://github.com/yggdrasil-network/yggdrasil-go/blob/v0.5.15/src/admin/getsessions.go
 - https://github.com/yggdrasil-network/yggdrasil-go/blob/v0.5.15/src/admin/gettree.go
 - https://github.com/yggdrasil-network/yggdrasil-go/blob/v0.5.15/src/admin/getpaths.go
-
----
-
-**Next implementation step:** build a small Go client around this contract with unit tests for framing, envelope status, malformed responses, missing commands, and empty peer/session arrays. Keep the first adapter read-only.
