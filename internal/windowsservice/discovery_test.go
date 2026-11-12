@@ -48,8 +48,21 @@ func TestParseAdminListen(t *testing.T) {
 	if got != "tcp://127.0.0.1:9001" { t.Fatalf("unexpected endpoint %q", got) }
 }
 
+func TestParseAdminListenUsesWindowsDefaultWhenMissing(t *testing.T) {
+	got, err := ParseAdminListen([]byte(`{}`))
+	if err != nil { t.Fatal(err) }
+	if got != defaultWindowsAdminListen {
+		t.Fatalf("got default endpoint %q, want %q", got, defaultWindowsAdminListen)
+	}
+}
+
 func TestParseAdminListenRejectsRemoteAndDisabled(t *testing.T) {
-	for _, input := range []string{`{ AdminListen: "tcp://0.0.0.0:9001" }`, `{ AdminListen: "" }`, `{}`, `{ AdminListen: 42 }`} {
+	for _, input := range []string{
+		`{ AdminListen: "tcp://0.0.0.0:9001" }`,
+		`{ AdminListen: "" }`,
+		`{ AdminListen: "none" }`,
+		`{ AdminListen: 42 }`,
+	} {
 		if _, err := ParseAdminListen([]byte(input)); err == nil { t.Fatalf("expected error for %s", input) }
 	}
 }
@@ -57,7 +70,6 @@ func TestParseAdminListenRejectsRemoteAndDisabled(t *testing.T) {
 func TestParseAdminListenMalformed(t *testing.T) {
 	if _, err := ParseAdminListen([]byte(strings.Repeat("{", 10))); err == nil { t.Fatal("expected parse error") }
 }
-
 
 func TestExpandWindowsEnvironment(t *testing.T) {
 	env := map[string]string{"ALLUSERSPROFILE": `C:\ProgramData`, "SystemRoot": `C:\Windows`}
